@@ -3,7 +3,7 @@
 During the prior run with `minInt=1e4` and `minPeaks=1`, only 17 MS2 spectra were saved to `ms2_spectra/13211mzML/`, whereas the summary workbook lists 540 unique spectra IDs (6032 rows). This note explains the discrepancy and how to adjust parameters.
 
 ## What happened
-- **Total MS2 spectra detected:** 540 unique IDs in `13211mzML-ms2Summary.xlsx` (6032 rows across all entries).  
+- **Total MS2 spectra detected:** 540 unique IDs in `13211mzML-ms2Summary.csv` (6032 rows across all entries).
 - **Spectra written to CSV:** 17 files in `ms2_spectra/13211mzML/`.
 
 ## Filters that remove spectra
