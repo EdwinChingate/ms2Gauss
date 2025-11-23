@@ -13,7 +13,7 @@ def All_ms2_spectra(DataSet,SummMS2,DataSetName,minInt=1e3,LogFileName='LogFile_
         os.mkdir(SpectraFoler)
     if save:
         SummMS2DF=pd.DataFrame(SummMS2,columns=['mz(Da)','RT(s)','id','maxInt','maxInt_frac'])
-        SummMS2DF.to_excel(SpectraFoler+'-ms2Summary.xlsx')
+        SummMS2DF.to_csv(SpectraFoler+'-ms2Summary.csv')
     SpectraList=[]
     N_spec=len(SummMS2[:,2])
     for spectrum_id in np.arange(N_spec,dtype='int'):
