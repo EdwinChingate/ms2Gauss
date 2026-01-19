@@ -40,5 +40,6 @@ def ms2_FeaturesDifferences(All_FeaturesTable,
     Feature_Modules = ms2_feat_modules(AdjacencyList = AdjacencyList_Features,
                                        ms2_ids = features_ids)
     Feature_Modules = Update_ids_FeatureModules(Feature_module = Feature_module,
-                                                Feature_Modules = Feature_Modules)
+                                                Feature_Modules = Feature_Modules,
+                                                CosineMat = CosineMat)
     return Feature_Modules

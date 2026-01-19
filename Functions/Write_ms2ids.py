@@ -1,3 +1,4 @@
+import pandas as pd
 def Write_ms2ids(features_ids,
                  ms2_ids_inModules,
                  AligningFolder = 'Alignedms2Features'):

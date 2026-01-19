@@ -4,8 +4,8 @@ import os
 import datetime
 from JoiningSummMS2 import *
 from ms2_SpectralSimilarityClustering import *
-#from ms2GaussFeatStats import *
-#from Write_ms2ids import *
+from ms2GaussFeatStats import *
+from Write_ms2ids import *
 def ms2_SamplesAligment(ResultsFolder,
                         mz_min = 250,
                         mz_max = 255,
@@ -47,11 +47,11 @@ def ms2_SamplesAligment(ResultsFolder,
                                                             Modules = Modules,
                                                             min_ms2_spectra = 4)    
     #This could become its own function for saving and formating 
-    Write_ms2ids(features_ids = AlignedSamplesMat[:,9],
+    Write_ms2ids(features_ids = AlignedSamplesMat[:,11],
                  ms2_ids_inModules = ms2_ids_inModules,
                  AligningFolder = 'Alignedms2Features')    
     
-    Columns = ['mz_(Da)','mz_std_(Da)', 'N_ms2-spectra','Normal test','mz_ConfidenceInterval_(Da)','mz_ConfidenceInterval_(ppm)','RT_(s)','min_RT_(s)','max_RT_(s)','feat_id']+SamplesNames
+    Columns = ['mz_(Da)','mz_std_(Da)', 'N_ms2-spectra','mean CosSim','std CosSim','Normal test','mz_ConfidenceInterval_(Da)','mz_ConfidenceInterval_(ppm)','RT_(s)','min_RT_(s)','max_RT_(s)','feat_id']+SamplesNames
     AlignedSamplesDF = pd.DataFrame(AlignedSamplesMat,columns = Columns)
     if saveAlignedTable:
         date = datetime.datetime.now()
