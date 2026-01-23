@@ -1,21 +1,34 @@
 import numpy as np
-def EvaluateSimilarities(CosineMat,MaxSimAdjacencyList,ClusterRow,ZeroRow):    
-    ClusterMembers = MaxSimAdjacencyList[ClusterRow][0]
-    ClusterCoherence = MaxSimAdjacencyList[ClusterRow][1]
-    ClusterExternalAffinity = MaxSimAdjacencyList[ClusterRow][2]
+def EvaluateSimilarities(CosineMat,
+                         Cluster,
+                         ClusterRow,
+                         ZeroRow,
+                         CosTolDif = 0.15):    
+    ClusterMembers = Cluster[0] 
+    ClusterCoherence = Cluster[1]
+    ClusterExternalAffinity = Cluster[2]
     NewMemberCosineVec = CosineMat[ZeroRow,:]    
     NodesSet = set(np.arange(len(NewMemberCosineVec),dtype='int').tolist())
-    NewClusterCoherence = min(list(NewMemberCosineVec[ClusterMembers]).append(ClusterCoherence))
-    NoNeighborsSet = NodesSet - set(list(NewMemberCosineVec[ClusterMembers]))
-    NewClusterExternalAffinity = max(list(NewMemberCosineVec[NoNeighborsSet]).append(ClusterExternalAffinity))    
-    Contrast = NewClusterCoherence-NewClusterExternalAffinity
-    merge = Constrast>0
+    NewClusterCoherence = float(min(NewMemberCosineVec[ClusterMembers].tolist()))
+    print(NewClusterCoherence)
+    NewClusterCoherence = min([NewClusterCoherence,ClusterCoherence])
+    print(NewClusterCoherence)
+    NoNeighborsSet = NodesSet - set(ClusterMembers)
+    ClusterExternalAffinity = np.max(CosineMat[np.ix_(ClusterMembers,list(NoNeighborsSet))])
+    NewClusterExternalAffinity = float(max(NewMemberCosineVec[list(NoNeighborsSet)]))
+    print(NewClusterExternalAffinity)
+    NewClusterExternalAffinity = max([NewClusterExternalAffinity,ClusterExternalAffinity])
+    print(NewClusterExternalAffinity)
+    print(np.where(NewMemberCosineVec==float(max(NewMemberCosineVec[list(NoNeighborsSet)]))))
+    Contrast = NewClusterCoherence-NewClusterExternalAffinity+CosTolDif
+    print(Contrast,NewClusterCoherence,NewClusterExternalAffinity)
+    merge = Contrast>=0
     if merge:
-        MaxSimAdjacencyList[ClusterRow][0].append(ZeroRow)
-        MaxSimAdjacencyList[ClusterRow][1] = NewClusterCoherence
-        MaxSimAdjacencyList[ClusterRow][2] = NewClusterExternalAffinity
+        Cluster[0] = ClusterMembers + [ZeroRow]
+        Cluster[1] = NewClusterCoherence
+        Cluster[2] = NewClusterExternalAffinity
     else:
         CosineMat[ClusterRow,ZeroRow] = 0
         CosineMat[ZeroRow,ClusterRow] = 0
-    return [merge,CosineMat,MaxSimAdjacencyList]
+    return [merge,CosineMat,Cluster]
     

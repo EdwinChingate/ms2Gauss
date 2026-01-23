@@ -1,16 +1,15 @@
 def UpdateCosineMat(CosineMat,
                     ZeroRow,
                     ClusterRow,
-                    MaxSimAdjacencyList):
-    N_membersZeroRow = len(MaxSimAdjacencyList[ZeroRow][0])
-    N_membersClusterRow = len(MaxSimAdjacencyList[ClusterRow][0])
-    N_members = N_membersZeroRow+N_membersClusterRow
+                    Cluster):
+    N_membersCluster = len(Cluster[0])    
     ZeroVec = CosineMat[ZeroRow,:]
     ClusterVec = CosineMat[ClusterRow,:]
-    Centroid = (N_membersZeroRow*ZeroVec+N_membersClusterRow*ClusterVec)/N_members
-    Centroid[ClusterRow] = 0
+    Centroid = (ZeroVec+N_membersCluster*ClusterVec)/(N_membersCluster+1)
+    sum(CosineMat[Cluster[0],:])/N_membersCluster
+    Centroid[Cluster[0]] = 0
     CosineMat[ClusterRow,:] = Centroid
     CosineMat[:,ClusterRow] = Centroid
-    CosineMat[ZeroRow,:] = 0
-    CosineMat[:,ZeroRow] = 0
+    #CosineMat[ZeroRow,:] = 0
+    #CosineMat[:,ZeroRow] = 0
     return CosineMat

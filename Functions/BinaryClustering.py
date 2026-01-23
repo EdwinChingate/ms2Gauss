@@ -1,23 +1,25 @@
 import numpy as np
-from EvaluateSimilarities import *
-from UpdateCosineMat import *
-def BinaryClustering(ClusterRow,CosineMat,MaxSimAdjacencyList):
+#from EvaluateSimilarities import *
+#from UpdateCosineMat import *
+def BinaryClustering(ClusterRow,
+                     CosineMat,
+                     Cluster,
+                     CosTolDif = 0.15):
     CosineVec = CosineMat[ClusterRow,:]
     maxSim = np.max(CosineVec)
     maxSimLoc = np.where(CosineVec == maxSim)[0][0]
-    ZeroRow = int(maxSimLoc[0])
-    merge,CosineMat,MaxSimAdjacencyList = EvaluateSimilarities(CosineMat = CosineMat,
-                                                               MaxSimAdjacencyList = MaxSimAdjacencyList,
-                                                               ClusterRow = ClusterRow,
-                                                               ZeroRow = ZeroRow)
+    ZeroRow = int(maxSimLoc)
+    print(ZeroRow)
+    merge,CosineMat,Cluster = EvaluateSimilarities(CosineMat = CosineMat,
+                                                   Cluster = Cluster,
+                                                   ClusterRow = ClusterRow,
+                                                   ZeroRow = ZeroRow,
+                                                   CosTolDif = CosTolDif)
+    print(merge)
     if not merge:
-        return [CosineMat,MaxSimAdjacencyList]
+        return [CosineMat,Cluster]
     CosineMat = UpdateCosineMat(CosineMat = CosineMat,
                                 ZeroRow = ZeroRow,
                                 ClusterRow = ClusterRow,
-                                MaxSimAdjacencyList = MaxSimAdjacencyList)    
-   #MaxSimAdjacencyList = FillMaxSimAdjacencyList(MaxSimAdjacencyList = MaxSimAdjacencyList,
-   #                                              ZeroRow = ZeroRow,
-   #                                              ClusterRow = ClusterRow,
-   #                                              CosineMat = CosineMat)    
-    return [CosineMat,MaxSimAdjacencyList]
+                                Cluster = Cluster)      
+    return [CosineMat,Cluster]
