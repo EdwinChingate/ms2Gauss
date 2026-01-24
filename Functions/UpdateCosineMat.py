@@ -10,6 +10,4 @@ def UpdateCosineMat(CosineMat,
     Centroid[Cluster[0]] = 0
     CosineMat[ClusterRow,:] = Centroid
     CosineMat[:,ClusterRow] = Centroid
-    #CosineMat[ZeroRow,:] = 0
-    #CosineMat[:,ZeroRow] = 0
     return CosineMat
