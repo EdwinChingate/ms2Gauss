@@ -21,8 +21,9 @@ def OverlappingClustering(Feature_Modules,
         NewAdjacencyList,ConflictiveNeighborsList = CompactNeighbourhood(AdjacencyList = AdjacencyList.copy(),
                                                                          AdjacencyMatrix = AdjacencyMatrix.copy(),
                                                                          CosineMat = CompactCosineTen[:,:,1])        
-        New_Modules = CommunityBlocks(AdjacencyList_Features = NewAdjacencyList)
+        New_Modules = CommunityBlocks(AdjacencyList_Features = NewAdjacencyList,
+                                      Order = -1)
         modulesDif = len(Modules) - len(New_Modules)        
         Modules = UpdateModulesAfterClustering(New_Modules = New_Modules,
                                                Modules = Modules)   
-    return [IntramoduleSimilarity,CompactCosineTen,Modules,ConflictiveNeighborsList]
+    return [IntramoduleSimilarity, CompactCosineTen, Modules, ConflictiveNeighborsList]

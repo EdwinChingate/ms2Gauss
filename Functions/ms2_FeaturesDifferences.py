@@ -8,6 +8,7 @@ from AdjacencyList_from_matrix import *
 from Update_ids_FeatureModules import *
 from ms2_feat_modules import *
 from AdjacencyList_ms2Fragments import *
+from minimalAlignedFragmentsMat import *
 def ms2_FeaturesDifferences(All_FeaturesTable,
                             Feature_module,
                             SamplesNames,
@@ -15,38 +16,42 @@ def ms2_FeaturesDifferences(All_FeaturesTable,
                             ms2_spec_id_col = 15,
                             ms2Folder = 'ms2_spectra',
                             ToAdd = 'mzML',
-                            min_Int_Frac = 2,
                             cos_tol = 0.9,
+                            Intensity_to_explain = 0.9,
+                            min_spectra = 3,
                             Norm2One = False,
                             percentile = 10):
-    All_ms2,Spectra_idVec = Retrieve_and_Join_ms2_for_feature(All_FeaturesTable = All_FeaturesTable,
-                                                              Feature_module = Feature_module,
-                                                              SamplesNames = SamplesNames,
-                                                              sample_id_col = sample_id_col,
-                                                              ms2_spec_id_col = ms2_spec_id_col,
-                                                              ms2Folder = ms2Folder,
-                                                              ToAdd = ToAdd,
-                                                              min_Int_Frac = min_Int_Frac,
-                                                              Norm2One = Norm2One)
+    All_ms2, Spectra_idVec = Retrieve_and_Join_ms2_for_feature(All_FeaturesTable = All_FeaturesTable,
+                                                               Feature_module = Feature_module,
+                                                               SamplesNames = SamplesNames,
+                                                               sample_id_col = sample_id_col,
+                                                               ms2_spec_id_col = ms2_spec_id_col,
+                                                               ms2Folder = ms2Folder,
+                                                               ToAdd = ToAdd,
+                                                               min_Int_Frac = 0,
+                                                               Norm2One = Norm2One)
     if len(All_ms2) == 0:
         return []
     Feature_module = np.array(Feature_module)[Spectra_idVec].tolist()
-    AdjacencyListFragments,feat_ids = AdjacencyList_ms2Fragments(All_ms2 = All_ms2)
+    AdjacencyListFragments, feat_ids = AdjacencyList_ms2Fragments(All_ms2 = All_ms2)
     N_features = len(Feature_module)
     Frag_Modules = ms2_feat_modules(AdjacencyList = AdjacencyListFragments,
                                     ms2_ids = feat_ids)
     AlignedFragmentsMat = AligniningFragments_in_Feature(Frag_Modules = Frag_Modules,
                                                          All_ms2 = All_ms2,
-                                                         N_features = N_features)    
+                                                         N_features = N_features)   
+    AlignedFragmentsMat = minimalAlignedFragmentsMat(AlignedFragmentsMat = AlignedFragmentsMat,
+                                                     Intensity_to_explain = Intensity_to_explain,
+                                                     min_spectra = min_spectra)
     CosineMat = CosineMatrix(AlignedFragmentsMat = AlignedFragmentsMat,
                              N_features = N_features)
-    AdjacencyList_Features,features_ids = AdjacencyList_from_matrix(CosineMat = CosineMat,
-                                                                    N_ms2_spectra = N_features,
-                                                                    cos_tol = cos_tol)
+    AdjacencyList_Features, features_ids = AdjacencyList_from_matrix(CosineMat = CosineMat,
+                                                                     N_ms2_spectra = N_features,
+                                                                     cos_tol = cos_tol)
     Feature_Modules = CommunityBlocks(AdjacencyList_Features = AdjacencyList_Features)
-    IntramoduleSimilarity,CompactCosineTen,Modules,ConflictiveNeighborsList = OverlappingClustering(Feature_Modules = Feature_Modules,
-                                                                                                    CosineMat = CosineMat.copy(),
-                                                                                                    percentile = percentile)    
+    IntramoduleSimilarity, CompactCosineTen, Modules, ConflictiveNeighborsList = OverlappingClustering(Feature_Modules = Feature_Modules,
+                                                                                                       CosineMat = CosineMat.copy(),
+                                                                                                       percentile = percentile)    
     Feature_Modules = Update_ids_FeatureModules(Feature_module = Feature_module,
                                                 Feature_Modules = Modules)
     return Feature_Modules
