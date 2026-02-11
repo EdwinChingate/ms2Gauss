@@ -1,14 +1,14 @@
 from Retrieve_and_Join_ms2_for_feature import *
-from OverlappingClustering import *
 from AdjacencyList_ms2Fragments import *
-from CommunityBlocks import *
+from ms2_feat_modules import *
 from AligniningFragments_in_Feature import *
+from minimalAlignedFragmentsMat import *
 from CosineMatrix import *
 from AdjacencyList_from_matrix import *
+from CommunityBlocks import *
+from OverlappingClustering import *
 from Update_ids_FeatureModules import *
-from ms2_feat_modules import *
-from AdjacencyList_ms2Fragments import *
-from minimalAlignedFragmentsMat import *
+
 def ms2_FeaturesDifferences(All_FeaturesTable,
                             Feature_module,
                             SamplesNames,
@@ -28,7 +28,6 @@ def ms2_FeaturesDifferences(All_FeaturesTable,
                                                                ms2_spec_id_col = ms2_spec_id_col,
                                                                ms2Folder = ms2Folder,
                                                                ToAdd = ToAdd,
-                                                               min_Int_Frac = 0,
                                                                Norm2One = Norm2One)
     if len(All_ms2) == 0:
         return []

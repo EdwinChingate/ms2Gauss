@@ -9,7 +9,7 @@ def minimalAlignedFragmentsMat(AlignedFragmentsMat,
     N_spectra = BinaryAlignedFragmentsMat.shape[1]
     Fragments_to_consider = []
     for spectrum_id in np.arange(N_spectra):
-        FragmentsVec = AlignedFragmentsMat[:,spectrum_id+1]
+        FragmentsVec = AlignedFragmentsMat[:, spectrum_id+1]
         RareFragmentsList, FragmentsList, fractionIntensity = minimalSpectrum(FragmentsVec = FragmentsVec,
                                                                               FragmentAbundanceVec = FragmentAbundanceVec,
                                                                               min_spectra = min_spectra,
@@ -20,5 +20,5 @@ def minimalAlignedFragmentsMat(AlignedFragmentsMat,
             
         Fragments_to_consider += FragmentsList
     Fragments_to_consider = list(set(Fragments_to_consider))
-    return AlignedFragmentsMat[Fragments_to_consider,:]
+    return AlignedFragmentsMat[Fragments_to_consider, :]
 
