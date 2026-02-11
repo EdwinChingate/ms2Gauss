@@ -1,25 +1,23 @@
 import numpy as np
-#from EvaluateSimilarities import *
-#from UpdateCosineMat import *
+from EvaluateSimilarities import *
+from UpdateCosineMat import *
 def BinaryClustering(ClusterRow,
                      CosineMat,
                      Cluster,
+                     Centroid,
+                     iterations_since_addition,
                      CosTolDif = 0.15):
-    CosineVec = CosineMat[ClusterRow,:]
-    maxSim = np.max(CosineVec)
-    maxSimLoc = np.where(CosineVec == maxSim)[0][0]
+    maxSim = np.max(Centroid)
+    maxSimLoc = np.where(Centroid == maxSim)[0][0]
     ZeroRow = int(maxSimLoc)
-    print(ZeroRow)
-    merge,CosineMat,Cluster = EvaluateSimilarities(CosineMat = CosineMat,
-                                                   Cluster = Cluster,
-                                                   ClusterRow = ClusterRow,
-                                                   ZeroRow = ZeroRow,
-                                                   CosTolDif = CosTolDif)
-    print(merge)
+    merge,Cluster,Centroid = EvaluateSimilarities(CosineMat = CosineMat,
+                                                  Cluster = Cluster,
+                                                  Centroid = Centroid,
+                                                  ZeroRow = ZeroRow,
+                                                  CosTolDif = CosTolDif)
     if not merge:
-        return [CosineMat,Cluster]
-    CosineMat = UpdateCosineMat(CosineMat = CosineMat,
-                                ZeroRow = ZeroRow,
-                                ClusterRow = ClusterRow,
-                                Cluster = Cluster)      
-    return [CosineMat,Cluster]
+        iterations_since_addition += 1
+        return [CosineMat, Cluster, Centroid, iterations_since_addition]
+    Centroid = ClustersCentroid(CosineMat = CosineMat,
+                                Cluster = Cluster)  
+    return [CosineMat, Cluster, Centroid, aiterations_since_addition]
