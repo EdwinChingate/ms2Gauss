@@ -3,14 +3,15 @@ import pandas as pd
 from ConsensusFragment import *
 from MostIntenseFragmentNorm import *
 def ConsensusSpectra(module,
-                     N_Fragments,
                      AlignedFragments_mz_Mat,
                      AlignedFragmentsMat,
                      percentile_mz = 5,
                      percentile_Int = 10,
                      minSpectra = 3,
                      alpha = 0.01,
+                     min_spectra = 3,
                      Columns_to_return = np.array([ 0, 3, 9, 10, 11, 17, 18, 19, 20, 21, 22])):
+    N_Fragments = len(AlignedFragments_mz_Mat[:,0])    
     consensus_spectra = []
     for fragment in np.arange(N_Fragments):
         SpectraFragmentVec = AlignedFragments_mz_Mat[fragment, np.array(module)+1]
@@ -45,7 +46,9 @@ def ConsensusSpectra(module,
                         "median_Int",
                         "Int_Q1",
                         "Int_Q3"])        
+    if len(consensus_spectra) == 0:
+        return []
     consensus_spectra = MostIntenseFragmentNorm(consensus_spectra = consensus_spectra)
     consensus_spectraDF = pd.DataFrame(consensus_spectra, columns = Columns)
-    consensus_spectraDF = consensus_spectraDF[Columns[Columns_to_return]].copy()    
+    consensus_spectraDF = consensus_spectraDF[Columns[Columns_to_return]].copy() 
     return consensus_spectraDF
