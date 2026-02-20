@@ -2,12 +2,12 @@ from Retrieve_and_Join_ms2_for_feature import *
 from AdjacencyList_ms2Fragments import *
 from ms2_feat_modules import *
 from AligniningFragments_in_Feature import *
-#from minimalAlignedFragmentsMat import *
+from minimalAlignedFragmentsMat import *
 from CosineMatrix import *
 from AdjacencyList_from_matrix import *
 from CommunityBlocks import *
 from OverlappingClustering import *
-#from Update_ids_FeatureModules import *
+from Update_ids_FeatureModules import *
 def ms2_FeaturesDifferences(All_FeaturesTable,
                             Feature_module,
                             SamplesNames,
@@ -52,22 +52,23 @@ def ms2_FeaturesDifferences(All_FeaturesTable,
                                                                      N_ms2_spectra = N_features,
                                                                      cos_tol = cos_tol)
     Feature_Modules = CommunityBlocks(AdjacencyList_Features = AdjacencyList_Features)
-    Modules = OverlappingClustering(Feature_Modules = Feature_Modules,
-                                    CosineMat = CosineMat.copy(),
-                                    percentile = percentile)    
+    Modules, IntramoduleSimilarity = OverlappingClustering(Feature_Modules = Feature_Modules,
+                                                           CosineMat = CosineMat.copy(),
+                                                           percentile = percentile)    
     This_Module_FeaturesTable = All_FeaturesTable[Feature_module, :].copy()
     This_Module_FeaturesTable = np.hstack((This_Module_FeaturesTable, Explained_fractionInt))
     Modules, feature_id, AlignedSamplesList = Update_ids_FeatureModules(Feature_module = Feature_module,
-                                                    Feature_Modules = Modules,
+                                                                        Feature_Modules = Modules,
+                                                                        IntramoduleSimilarity = IntramoduleSimilarity,
                                                                         AlignedSamplesList = AlignedSamplesList,
-                                                    All_FeaturesTable = This_Module_FeaturesTable,
-                                                    sample_id_col = sample_id_col,
-                                                    ms2_spec_id_col = ms2_spec_id_col,
-                                                    AlignedFragmentsMat = AlignedFragmentsMat,
-                                                    AlignedFragments_mz_Mat = AlignedFragments_mz_Mat,
-                                                    percentile_mz = percentile_mz,
-                                                    percentile_Int = percentile_Int,
-                                                    feature_id = feature_id,
-                                                    min_spectra = min_spectra,
-                                                    SamplesNames = SamplesNames)
+                                                                        All_FeaturesTable = This_Module_FeaturesTable,
+                                                                        sample_id_col = sample_id_col,
+                                                                        ms2_spec_id_col = ms2_spec_id_col,
+                                                                        AlignedFragmentsMat = AlignedFragmentsMat,
+                                                                        AlignedFragments_mz_Mat = AlignedFragments_mz_Mat,
+                                                                        percentile_mz = percentile_mz,
+                                                                        percentile_Int = percentile_Int,
+                                                                        feature_id = feature_id,
+                                                                        min_spectra = min_spectra,
+                                                                        SamplesNames = SamplesNames)
     return [Modules, feature_id, AlignedSamplesList]

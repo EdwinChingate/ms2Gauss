@@ -26,4 +26,4 @@ def OverlappingClustering(Feature_Modules,
         modulesDif = len(Modules) - len(New_Modules)        
         Modules = UpdateModulesAfterClustering(New_Modules = New_Modules,
                                                Modules = Modules)   
-    return Modules
+    return [Modules, IntramoduleSimilarity]

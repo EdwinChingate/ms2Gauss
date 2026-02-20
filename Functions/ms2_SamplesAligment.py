@@ -3,8 +3,8 @@ import pandas as pd
 import os
 import datetime
 from JoiningSummMS2 import *
-#from ms2_SpectralSimilarityClustering import *
-#from Write_ms2ids import *
+from ms2_SpectralSimilarityClustering import *
+from Write_ms2ids import *
 def ms2_SamplesAligment(ResultsFolder,
                         mz_min = 254,
                         mz_max = 255,
@@ -28,33 +28,18 @@ def ms2_SamplesAligment(ResultsFolder,
                                                     RT_min = RT_min,
                                                     RT_max = RT_max,
                                                     ToReplace = ToReplace)
-    Modules = ms2_SpectralSimilarityClustering(SummMS2_raw = All_SummMS2Table,
-                                               SamplesNames = SamplesNames,
-                                               mz_col = 1,
-                                               RT_col = 2,
-                                               RT_tol = RT_tol,
-                                               mz_Tol = mz_Tol,
-                                               sample_id_col = 6,
-                                               ms2_spec_id_col = 0,
-                                               ms2Folder = ms2Folder,
-                                               ToAdd = ToAdd,
-                                               cos_tol = cos_tol,
-                                               Norm2One = Norm2One)     
-    Columns = ['mz_(Da)',
-               'mz_std_(Da)',
-               'N_ms2-spectra',
-               'mean CosSim',
-               'std CosSim',
-               'Normal test',
-               'mz_ConfidenceInterval_(Da)',
-               'mz_ConfidenceInterval_(ppm)',
-               'RT_(s)',
-               'min_RT_(s)',
-               'max_RT_(s)',
-               'feat_id']
-    Columns = Columns + SamplesNames 
-
-    #AlignedSamplesDF = pd.DataFrame(AlignedSamplesMat,columns = Columns)
+    AlignedSamplesDF = ms2_SpectralSimilarityClustering(SummMS2_raw = All_SummMS2Table,
+                                                        SamplesNames = SamplesNames,
+                                                        mz_col = 1,
+                                                        RT_col = 2,
+                                                        RT_tol = RT_tol,
+                                                        mz_Tol = mz_Tol,
+                                                        sample_id_col = 6,
+                                                        ms2_spec_id_col = 0,
+                                                        ms2Folder = ms2Folder,
+                                                        ToAdd = ToAdd,
+                                                        cos_tol = cos_tol,
+                                                        Norm2One = Norm2One)     
     if saveAlignedTable:
         date = datetime.datetime.now()
         string_date = str(date)

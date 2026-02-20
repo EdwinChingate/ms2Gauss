@@ -7,7 +7,7 @@ def AdjacentOverlappingModules(IntramoduleSimilarity,
     AdjacencyList = []
     module_ids = []
     for module_id in np.arange(N_modules):    
-        LowIntramoduleSimmilarity = IntramoduleSimilarity[module_id, 1]
+        LowIntramoduleSimmilarity = IntramoduleSimilarity[module_id, 1].copy()
         if LowIntramoduleSimmilarity > cos_tol:
             LowIntramoduleSimmilarity = cos_tol
         maxSimNeighborsVec = CompactCosineTen[module_id, :, 2]

@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from AdjacencyListFeatures import *
 from ms2_feat_modules import *
-#from ms2_FeaturesDifferences import *
+from ms2_FeaturesDifferences import *
 def ms2_SpectralSimilarityClustering(SummMS2_raw,
                                      SampleName = '',
                                      SamplesNames = [],
@@ -25,20 +25,37 @@ def ms2_SpectralSimilarityClustering(SummMS2_raw,
                                                     mz_Tol = mz_Tol)
     RawModules = ms2_feat_modules(AdjacencyList = AdjacencyList,
                                   ms2_ids = feat_ids)
-    Modules = []
     feature_id = 0
     AlignedSamplesList = []
     for Feature_module in RawModules:
         Feature_Modules, feature_id, AlignedSamplesList = ms2_FeaturesDifferences(All_FeaturesTable = SummMS2_raw,
-                                                              Feature_module = Feature_module,
-                                                              AlignedSamplesList = AlignedSamplesList,
-                                                              SamplesNames = SamplesNames,
-                                                              sample_id_col = sample_id_col,
-                                                              ms2_spec_id_col = ms2_spec_id_col,
-                                                              ms2Folder = ms2Folder,
-                                                              ToAdd = ToAdd,
-                                                              cos_tol = cos_tol,
-                                                              Norm2One = Norm2One,
-                                                              feature_id = feature_id)
-        Modules += Feature_Modules
-    return Modules
+                                                                                  Feature_module = Feature_module,
+                                                                                  AlignedSamplesList = AlignedSamplesList,
+                                                                                  SamplesNames = SamplesNames,
+                                                                                  sample_id_col = sample_id_col,
+                                                                                  ms2_spec_id_col = ms2_spec_id_col,
+                                                                                  ms2Folder = ms2Folder,
+                                                                                  ToAdd = ToAdd,
+                                                                                  cos_tol = cos_tol,
+                                                                                  Norm2One = Norm2One,
+                                                                                  feature_id = feature_id)
+    Columns = ['median_mz(Da)',
+               'min_mz',
+               'max_mz',
+               'IQR_mz(ppm)',
+               'N_samples',
+               'N_ms2-spectra',
+               'min_CosSim',
+               'Q1_CosSim',
+               'median_CosSim',
+               'Q3_CosSim',
+               'max_CosSim',
+               'median_RT(s)',
+               'Q1_RT(s)',
+               'Q3_RT(s)',
+               'min_RT(s)',
+               'max_RT(s)',
+               'feat_id']
+    Columns = Columns + SamplesNames 
+    AlignedSamplesDF = pd.DataFrame(AlignedSamplesList,columns = Columns)
+    return AlignedSamplesDF

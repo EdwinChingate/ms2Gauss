@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 from ConsensusSpectra import *
-#from Write_ms2ids_and_Consensus_ms2Spectra import *
-#from FeatureModuleStats import *
+from Write_ms2ids_and_Consensus_ms2Spectra import *
+from FeatureModuleStats import *
 def ClosingModule(module,
                   Modules,
                   AlignedFragments_mz_Mat,
@@ -12,6 +12,7 @@ def ClosingModule(module,
                   All_FeaturesTable,
                   AlignedSamplesList,
                   SamplesNames,
+                  IntramoduleCosineStatsVec,
                   sample_id_col = 6,
                   ms2_spec_id_col = 0,
                   percentile_mz = 5,
@@ -38,10 +39,11 @@ def ClosingModule(module,
                                           All_FeaturesTable = All_FeaturesTable,
                                           sample_id_col = sample_id_col,
                                           ms2_spec_id_col = ms2_spec_id_col,
-                                          explained_Int_col = All_FeaturesTable.shape[1] - 1)    
+                                          explained_Int_col = All_FeaturesTable.shape[1] - 1)  
     AlignedSamplesVec = FeatureModuleStats(All_FeaturesTable = All_FeaturesTable,
                                            module = module,
                                            SamplesNames = SamplesNames,
+                                           IntramoduleCosineStatsVec = IntramoduleCosineStatsVec,
                                            feature_id = feature_id)   
     AlignedSamplesList.append(AlignedSamplesVec)    
     feature_id += 1
