@@ -3,9 +3,10 @@ import pandas as pd
 import os
 import datetime
 from JoiningSummMS2 import *
-from ms2_SpectralSimilarityClustering import *
+#from ms2_SpectralSimilarityClustering import *
 from Write_ms2ids import *
 def ms2_SamplesAligment(ResultsFolder,
+                        ProjectName = '',
                         mz_min = 254,
                         mz_max = 255,
                         RT_min = 0,
@@ -21,6 +22,7 @@ def ms2_SamplesAligment(ResultsFolder,
                         name = "SamplesAligment",
                         Norm2One = True):
     home = os.getcwd()
+    
     #ResultsFolder = home+'/'+ResultsFolderName
     All_SummMS2Table, SamplesNames = JoiningSummMS2(ResultsFolder = ResultsFolder,
                                                     mz_min = mz_min-3*mz_Tol,

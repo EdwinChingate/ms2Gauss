@@ -27,18 +27,20 @@ def ms2_SpectralSimilarityClustering(SummMS2_raw,
                                   ms2_ids = feat_ids)
     feature_id = 0
     AlignedSamplesList = []
+    slice_id = 6
     for Feature_module in RawModules:
-        Feature_Modules, feature_id, AlignedSamplesList = ms2_FeaturesDifferences(All_FeaturesTable = SummMS2_raw,
-                                                                                  Feature_module = Feature_module,
-                                                                                  AlignedSamplesList = AlignedSamplesList,
-                                                                                  SamplesNames = SamplesNames,
-                                                                                  sample_id_col = sample_id_col,
-                                                                                  ms2_spec_id_col = ms2_spec_id_col,
-                                                                                  ms2Folder = ms2Folder,
-                                                                                  ToAdd = ToAdd,
-                                                                                  cos_tol = cos_tol,
-                                                                                  Norm2One = Norm2One,
-                                                                                  feature_id = feature_id)
+        feature_id, AlignedSamplesList = ms2_FeaturesDifferences(All_FeaturesTable = SummMS2_raw,
+                                                                 Feature_module = Feature_module,
+                                                                 AlignedSamplesList = AlignedSamplesList,
+                                                                 SamplesNames = SamplesNames,
+                                                                 sample_id_col = sample_id_col,
+                                                                 ms2_spec_id_col = ms2_spec_id_col,
+                                                                 ms2Folder = ms2Folder,
+                                                                 ToAdd = ToAdd,
+                                                                 cos_tol = cos_tol,
+                                                                 Norm2One = Norm2One,
+                                                                 feature_id = feature_id,
+                                                                 slice_id = slice_id)
     Columns = ['median_mz(Da)',
                'min_mz',
                'max_mz',

@@ -14,24 +14,22 @@ def Update_ids_FeatureModules(Feature_module,
                               percentile_Int = 10,
                               feature_id = 0,
                               min_spectra = 3):    
-    Modules=[]
     module_id = 0
     for module in Feature_Modules:    
         IntramoduleCosineStatsVec = IntramoduleSimilarity[module_id, 1: 6]
-        Modules, feature_id, AlignedSamplesList = ClosingModule(module = module,
-                                                                Modules = Modules,
-                                                                min_spectra = min_spectra,
-                                                                All_FeaturesTable = All_FeaturesTable,
-                                                                sample_id_col = sample_id_col,
-                                                                IntramoduleCosineStatsVec = IntramoduleCosineStatsVec,
-                                                                ms2_spec_id_col = ms2_spec_id_col,
-                                                                Feature_module = Feature_module,
-                                                                AlignedSamplesList = AlignedSamplesList,
-                                                                AlignedFragmentsMat = AlignedFragmentsMat,
-                                                                AlignedFragments_mz_Mat = AlignedFragments_mz_Mat,
-                                                                percentile_mz = percentile_mz,
-                                                                percentile_Int = percentile_Int,
-                                                                feature_id = feature_id,
-                                                                SamplesNames = SamplesNames)  
+        feature_id, AlignedSamplesList = ClosingModule(module = module,
+                                                       min_spectra = min_spectra,
+                                                       All_FeaturesTable = All_FeaturesTable,
+                                                       sample_id_col = sample_id_col,
+                                                       IntramoduleCosineStatsVec = IntramoduleCosineStatsVec,
+                                                       ms2_spec_id_col = ms2_spec_id_col,
+                                                       Feature_module = Feature_module,
+                                                       AlignedSamplesList = AlignedSamplesList,
+                                                       AlignedFragmentsMat = AlignedFragmentsMat,
+                                                       AlignedFragments_mz_Mat = AlignedFragments_mz_Mat,
+                                                       percentile_mz = percentile_mz,
+                                                       percentile_Int = percentile_Int,
+                                                       feature_id = feature_id,
+                                                       SamplesNames = SamplesNames)  
         module_id += 1
-    return [Modules, feature_id, AlignedSamplesList]
+    return [feature_id, AlignedSamplesList]

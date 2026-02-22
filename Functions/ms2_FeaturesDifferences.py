@@ -12,6 +12,7 @@ def ms2_FeaturesDifferences(All_FeaturesTable,
                             Feature_module,
                             SamplesNames,
                             AlignedSamplesList,
+                            slice_id = 0,
                             sample_id_col = 16,
                             ms2_spec_id_col = 15,
                             ms2Folder = 'ms2_spectra',
@@ -55,20 +56,24 @@ def ms2_FeaturesDifferences(All_FeaturesTable,
     Modules, IntramoduleSimilarity = OverlappingClustering(Feature_Modules = Feature_Modules,
                                                            CosineMat = CosineMat.copy(),
                                                            percentile = percentile)    
+    ShowDF(All_FeaturesTable)
     This_Module_FeaturesTable = All_FeaturesTable[Feature_module, :].copy()
-    This_Module_FeaturesTable = np.hstack((This_Module_FeaturesTable, Explained_fractionInt))
-    Modules, feature_id, AlignedSamplesList = Update_ids_FeatureModules(Feature_module = Feature_module,
-                                                                        Feature_Modules = Modules,
-                                                                        IntramoduleSimilarity = IntramoduleSimilarity,
-                                                                        AlignedSamplesList = AlignedSamplesList,
-                                                                        All_FeaturesTable = This_Module_FeaturesTable,
-                                                                        sample_id_col = sample_id_col,
-                                                                        ms2_spec_id_col = ms2_spec_id_col,
-                                                                        AlignedFragmentsMat = AlignedFragmentsMat,
-                                                                        AlignedFragments_mz_Mat = AlignedFragments_mz_Mat,
-                                                                        percentile_mz = percentile_mz,
-                                                                        percentile_Int = percentile_Int,
-                                                                        feature_id = feature_id,
-                                                                        min_spectra = min_spectra,
-                                                                        SamplesNames = SamplesNames)
-    return [Modules, feature_id, AlignedSamplesList]
+    This_Module_FeaturesTable = np.hstack((This_Module_FeaturesTable,
+                                           Explained_fractionInt))
+    This_Module_FeaturesTable = np.hstack((This_Module_FeaturesTable,
+                                           slice_id * np.ones(len(Explained_fractionInt)).reshape(-1, 1)))
+    feature_id, AlignedSamplesList = Update_ids_FeatureModules(Feature_module = Feature_module,
+                                                               Feature_Modules = Modules,
+                                                               IntramoduleSimilarity = IntramoduleSimilarity,
+                                                               AlignedSamplesList = AlignedSamplesList,
+                                                               All_FeaturesTable = This_Module_FeaturesTable,
+                                                               sample_id_col = sample_id_col,
+                                                               ms2_spec_id_col = ms2_spec_id_col,
+                                                               AlignedFragmentsMat = AlignedFragmentsMat,
+                                                               AlignedFragments_mz_Mat = AlignedFragments_mz_Mat,
+                                                               percentile_mz = percentile_mz,
+                                                               percentile_Int = percentile_Int,
+                                                               feature_id = feature_id,
+                                                               min_spectra = min_spectra,
+                                                               SamplesNames = SamplesNames)
+    return [feature_id, AlignedSamplesList]

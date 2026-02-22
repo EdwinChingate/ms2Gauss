@@ -14,19 +14,27 @@ def JoiningSummMS2(ResultsFolder,
     firstTable = True
     for sample_id in np.arange(N_samples,dtype = 'int'):   
         features_table = SamplesList[sample_id]
-        sample_name = features_table.replace(ToReplace,'')
+        sample_name = features_table.replace(ToReplace, '')
         SamplesNames.append(sample_name)
-        features_table_name = ResultsFolder+'/'+features_table
+        features_table_name = ResultsFolder + '/' + features_table
         SummMS2TableDF = pd.read_excel(features_table_name)        
         SummMS2Table = np.array(SummMS2TableDF)
-        N_features = len(SummMS2Table[:,0])
-        featureLocVec = np.ones(N_features).reshape(-1,1)*sample_id
-        SummMS2Table = np.append(SummMS2Table,featureLocVec,axis = 1)
+        N_features = len(SummMS2Table[:, 0])
+        featureLocVec = np.ones(N_features).reshape(-1, 1) * sample_id
+        SummMS2Table = np.append(SummMS2Table,
+                                 featureLocVec,
+                                 axis = 1)
         if firstTable:
             All_SummMS2Table = SummMS2Table
             firstTable = False
         else:
-            All_SummMS2Table = np.append(All_SummMS2Table,SummMS2Table,axis = 0)    
-    Filter = (All_SummMS2Table[:,1]>mz_min)&(All_SummMS2Table[:,1]<mz_max)&(All_SummMS2Table[:,2]>RT_min)&(All_SummMS2Table[:,2]<RT_max)
-    All_SummMS2Table = All_SummMS2Table[Filter,:]
-    return [All_SummMS2Table,SamplesNames]
+            All_SummMS2Table = np.append(All_SummMS2Table,
+                                         SummMS2Table,
+                                         axis = 0)    
+    mz_Filter = (All_SummMS2Table[:, 1] > mz_min) & (All_SummMS2Table[:, 1] < mz_max) 
+    RT_Filter = (All_SummMS2Table[:, 2] > RT_min) & (All_SummMS2Table[:, 2] < RT_max)
+    All_SummMS2Table = All_SummMS2Table[mz_Filter & RT_Filter,:]
+    All_SummMS2Table = All_SummMS2Table[All_SummMS2Table[:, 1].argsort(), :]
+    idsVec = np.arange(len(All_SummMS2Table[:, 0])).reshape(-1, 1)
+    All_SummMS2Table = np.hstack((All_SummMS2Table, idsVec))
+    return [All_SummMS2Table, SamplesNames]
