@@ -34,7 +34,7 @@ def ms2_FeaturesDifferences(All_FeaturesTable,
                                                                ToAdd = ToAdd,
                                                                Norm2One = Norm2One)
     if len(All_ms2) == 0:
-        return []
+        return [feature_id, AlignedSamplesList]
     Feature_module = np.array(Feature_module)[Spectra_idVec].tolist()
     AdjacencyListFragments, feat_ids = AdjacencyList_ms2Fragments(All_ms2 = All_ms2)
     N_features = len(Feature_module)
@@ -56,7 +56,6 @@ def ms2_FeaturesDifferences(All_FeaturesTable,
     Modules, IntramoduleSimilarity = OverlappingClustering(Feature_Modules = Feature_Modules,
                                                            CosineMat = CosineMat.copy(),
                                                            percentile = percentile)    
-    ShowDF(All_FeaturesTable)
     This_Module_FeaturesTable = All_FeaturesTable[Feature_module, :].copy()
     This_Module_FeaturesTable = np.hstack((This_Module_FeaturesTable,
                                            Explained_fractionInt))

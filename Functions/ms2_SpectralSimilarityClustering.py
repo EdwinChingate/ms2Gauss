@@ -6,6 +6,8 @@ from ms2_FeaturesDifferences import *
 def ms2_SpectralSimilarityClustering(SummMS2_raw,
                                      SampleName = '',
                                      SamplesNames = [],
+                                     slice_id = 0,
+                                     feature_id = 0,
                                      mz_col = 1,
                                      RT_col = 2,
                                      RT_tol = 20,
@@ -25,9 +27,7 @@ def ms2_SpectralSimilarityClustering(SummMS2_raw,
                                                     mz_Tol = mz_Tol)
     RawModules = ms2_feat_modules(AdjacencyList = AdjacencyList,
                                   ms2_ids = feat_ids)
-    feature_id = 0
     AlignedSamplesList = []
-    slice_id = 6
     for Feature_module in RawModules:
         feature_id, AlignedSamplesList = ms2_FeaturesDifferences(All_FeaturesTable = SummMS2_raw,
                                                                  Feature_module = Feature_module,
@@ -60,4 +60,4 @@ def ms2_SpectralSimilarityClustering(SummMS2_raw,
                'feat_id']
     Columns = Columns + SamplesNames 
     AlignedSamplesDF = pd.DataFrame(AlignedSamplesList,columns = Columns)
-    return AlignedSamplesDF
+    return [AlignedSamplesDF, feature_id]

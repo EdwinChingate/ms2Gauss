@@ -2,51 +2,36 @@ import numpy as np
 import pandas as pd
 import os
 import datetime
-from JoiningSummMS2 import *
-#from ms2_SpectralSimilarityClustering import *
+from ms2_SpectralSimilarityClustering import *
 from Write_ms2ids import *
-def ms2_SamplesAligment(ResultsFolder,
-                        ProjectName = '',
-                        mz_min = 254,
-                        mz_max = 255,
-                        RT_min = 0,
-                        RT_max = 2000,
+def ms2_SamplesAligment(ProjectName,
+                        All_SummMS2Table,
+                        EdgesMat,
+                        SamplesNames,
                         RT_tol = 30,
                         mz_Tol = 2e-3,
+                        feature_id = 0,
                         cos_tol = 0.8,
                         min_N_ms2_spectra = 3,
                         ToReplace = 'mzML-ms2Summary.xlsx',
                         ms2Folder = 'ms2_spectra',
                         ToAdd = 'mzML',
-                        saveAlignedTable = False,
-                        name = "SamplesAligment",
                         Norm2One = True):
-    home = os.getcwd()
-    
-    #ResultsFolder = home+'/'+ResultsFolderName
-    All_SummMS2Table, SamplesNames = JoiningSummMS2(ResultsFolder = ResultsFolder,
-                                                    mz_min = mz_min-3*mz_Tol,
-                                                    mz_max = mz_max+3*mz_Tol,
-                                                    RT_min = RT_min,
-                                                    RT_max = RT_max,
-                                                    ToReplace = ToReplace)
-    AlignedSamplesDF = ms2_SpectralSimilarityClustering(SummMS2_raw = All_SummMS2Table,
-                                                        SamplesNames = SamplesNames,
-                                                        mz_col = 1,
-                                                        RT_col = 2,
-                                                        RT_tol = RT_tol,
-                                                        mz_Tol = mz_Tol,
-                                                        sample_id_col = 6,
-                                                        ms2_spec_id_col = 0,
-                                                        ms2Folder = ms2Folder,
-                                                        ToAdd = ToAdd,
-                                                        cos_tol = cos_tol,
-                                                        Norm2One = Norm2One)     
-    if saveAlignedTable:
-        date = datetime.datetime.now()
-        string_date = str(date)
-        string_date = string_date[:16].replace(':',"_")
-        string_date = string_date.replace(' ',"_")
-        name = name+"_"+string_date+'.xlsx'
-        AlignedSamplesDF.to_excel(name)
-    return AlignedSamplesDF
+    for Low_id_mz, High_id_mz, slice_id in EdgesMat:
+        SummMS2_raw = All_SummMS2Table[Low_id_mz: High_id_mz, :]
+        AlignedSamplesDF, feature_id = ms2_SpectralSimilarityClustering(SummMS2_raw = SummMS2_raw,
+                                                                        SamplesNames = SamplesNames,
+                                                                        feature_id = feature_id,
+                                                                        slice_id = slice_id,
+                                                                        mz_col = 1,
+                                                                        RT_col = 2,
+                                                                        RT_tol = RT_tol,
+                                                                        mz_Tol = mz_Tol,
+                                                                        sample_id_col = 6,
+                                                                        ms2_spec_id_col = 0,
+                                                                        ms2Folder = ms2Folder,
+                                                                        ToAdd = ToAdd,
+                                                                        cos_tol = cos_tol,
+                                                                        Norm2One = Norm2One)     
+        TableLoc = ProjectName + '-' + str(slice_id) + '.csv'
+        AlignedSamplesDF.to_csv(TableLoc)
