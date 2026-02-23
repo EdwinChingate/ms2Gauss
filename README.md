@@ -1,6 +1,6 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-> **Opportunities:** Maintainer is open to paid roles/contracts in computational MS/MS + scientific software. Contact: edwinchingate@gmail.com
+> **Opportunities:** Developer is open to paid roles/contracts in computational MS/MS + scientific software. Contact: edwinchingate@gmail.com
 
 ![[]](https://github.com/EdwinChingate/ms2Gauss/blob/main/ms2Topo.png)
 
@@ -104,4 +104,7 @@ ms2Topo originated from my PhD research on microbial transformation of pharmaceu
 
 I’m currently writing my PhD dissertation and I’m actively seeking a paid role (or contract) in computational mass spectrometry / scientific software (e.g., Computational MS Scientist, Scientific Software Engineer, Research Software Engineer). I’m looking for a team where I can apply and scale topology-driven MS/MS methods on real datasets while completing the final dissertation stage in parallel.
 
+If ms2Topo is relevant to your lab or product roadmap, I’d love to talk.
 
+- Email: edwinchingate@gmail.com  
+- LinkedIn: https://www.linkedin.com/in/edwinchingate/
