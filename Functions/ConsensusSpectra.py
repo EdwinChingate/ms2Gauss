@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from ConsensusFragment import *
 from MostIntenseFragmentNorm import *
+# I'm still missing alternative the normalization to the square for the consensus spectra
 def ConsensusSpectra(module,
                      AlignedFragments_mz_Mat,
                      AlignedFragmentsMat,
@@ -10,6 +11,7 @@ def ConsensusSpectra(module,
                      minSpectra = 3,
                      alpha = 0.01,
                      min_spectra = 3,
+                     reduceIQR_factor = 1,
                      Columns_to_return = np.array([ 0, 3, 9, 10, 11, 17, 18, 19, 20, 21, 22])):
     N_Fragments = len(AlignedFragments_mz_Mat[:,0])    
     consensus_spectra = []
@@ -22,10 +24,11 @@ def ConsensusSpectra(module,
                                               percentile_mz = percentile_mz,
                                               percentile_Int = percentile_Int,
                                               minSpectra = minSpectra,
-                                              alpha = alpha)
+                                              alpha = alpha,
+                                              reduceIQR_factor = reduceIQR_factor)
     Columns = np.array(["median_mz(Da)",
                         "mz_std(Da)",
-                        "p-Shapiro",
+                        "IQR_mz(Da)",
                         "N_spectra",
                         "t-student Confidence_interval(Da)",
                         "t-student Confidence_interval(ppm)",

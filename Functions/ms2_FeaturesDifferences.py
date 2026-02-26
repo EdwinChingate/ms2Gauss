@@ -1,12 +1,4 @@
-from Retrieve_and_Join_ms2_for_feature import *
-from AdjacencyList_ms2Fragments import *
-from ms2_feat_modules import *
-from AligniningFragments_in_Feature import *
-from minimalAlignedFragmentsMat import *
-from CosineMatrix import *
-from AdjacencyList_from_matrix import *
-from CommunityBlocks import *
-from OverlappingClustering import *
+from FeatureClusterData import *
 from Update_ids_FeatureModules import *
 def ms2_FeaturesDifferences(All_FeaturesTable,
                             Feature_module,
@@ -17,62 +9,44 @@ def ms2_FeaturesDifferences(All_FeaturesTable,
                             ms2_spec_id_col = 15,
                             ms2Folder = 'ms2_spectra',
                             ToAdd = 'mzML',
+                            Norm2One = False,
                             cos_tol = 0.9,
                             Intensity_to_explain = 0.9,
                             min_spectra = 3,
-                            Norm2One = False,
                             percentile = 10,
                             percentile_mz = 5,
                             percentile_Int = 10,
-                            feature_id = 0):
-    All_ms2, Spectra_idVec = Retrieve_and_Join_ms2_for_feature(All_FeaturesTable = All_FeaturesTable,
-                                                               Feature_module = Feature_module,
-                                                               SamplesNames = SamplesNames,
-                                                               sample_id_col = sample_id_col,
-                                                               ms2_spec_id_col = ms2_spec_id_col,
-                                                               ms2Folder = ms2Folder,
-                                                               ToAdd = ToAdd,
-                                                               Norm2One = Norm2One)
-    if len(All_ms2) == 0:
-        return [feature_id, AlignedSamplesList]
-    Feature_module = np.array(Feature_module)[Spectra_idVec].tolist()
-    AdjacencyListFragments, feat_ids = AdjacencyList_ms2Fragments(All_ms2 = All_ms2)
-    N_features = len(Feature_module)
-    Frag_Modules = ms2_feat_modules(AdjacencyList = AdjacencyListFragments,
-                                    ms2_ids = feat_ids)
-    AlignedFragmentsMat, AlignedFragments_mz_Mat = AligniningFragments_in_Feature(Frag_Modules = Frag_Modules,
-                                                                                  All_ms2 = All_ms2,
-                                                                                  N_features = N_features)   
-    AlignedFragmentsMat, AlignedFragments_mz_Mat, Explained_fractionInt = minimalAlignedFragmentsMat(AlignedFragmentsMat = AlignedFragmentsMat,
-                                                                                                     AlignedFragments_mz_Mat = AlignedFragments_mz_Mat,
-                                                                                                     Intensity_to_explain = Intensity_to_explain,
-                                                                                                     min_spectra = min_spectra)
-    CosineMat = CosineMatrix(AlignedFragmentsMat = AlignedFragmentsMat,
-                             N_features = N_features)
-    AdjacencyList_Features, features_ids = AdjacencyList_from_matrix(CosineMat = CosineMat,
-                                                                     N_ms2_spectra = N_features,
-                                                                     cos_tol = cos_tol)
-    Feature_Modules = CommunityBlocks(AdjacencyList_Features = AdjacencyList_Features)
-    Modules, IntramoduleSimilarity = OverlappingClustering(Feature_Modules = Feature_Modules,
-                                                           CosineMat = CosineMat.copy(),
-                                                           percentile = percentile)    
-    This_Module_FeaturesTable = All_FeaturesTable[Feature_module, :].copy()
-    This_Module_FeaturesTable = np.hstack((This_Module_FeaturesTable,
-                                           Explained_fractionInt))
-    This_Module_FeaturesTable = np.hstack((This_Module_FeaturesTable,
-                                           slice_id * np.ones(len(Explained_fractionInt)).reshape(-1, 1)))
-    feature_id, AlignedSamplesList = Update_ids_FeatureModules(Feature_module = Feature_module,
-                                                               Feature_Modules = Modules,
-                                                               IntramoduleSimilarity = IntramoduleSimilarity,
+                            SamplingTimes = 20,
+                            Nspectra_sampling = 54,
+                            max_Nspectra_cluster = 250,
+                            feature_id = 0):    
+    feature_cluster_data, sampling_samples = FeatureClusterData(All_FeaturesTable = All_FeaturesTable,
+                                                                Feature_module = Feature_module,
+                                                                Intensity_to_explain = Intensity_to_explain,
+                                                                min_spectra = min_spectra,
+                                                                cos_tol = cos_tol,
+                                                                percentile = percentile,
+                                                                slice_id = slice_id,
+                                                                max_Nspectra_cluster = max_Nspectra_cluster,
+                                                                Nspectra_sampling = Nspectra_sampling,
+                                                                SamplingTimes = SamplingTimes,
+                                                                SamplesNames = SamplesNames,
+                                                                sample_id_col = sample_id_col,
+                                                                ms2_spec_id_col = ms2_spec_id_col,
+                                                                ms2Folder = ms2Folder,
+                                                                ToAdd = ToAdd,
+                                                                Norm2One = Norm2One,
+                                                                percentile_mz = percentile_mz,
+                                                                percentile_Int = percentile_Int)
+    
+    feature_id, AlignedSamplesList = Update_ids_FeatureModules(feature_cluster_data = feature_cluster_data,
                                                                AlignedSamplesList = AlignedSamplesList,
-                                                               All_FeaturesTable = This_Module_FeaturesTable,
                                                                sample_id_col = sample_id_col,
                                                                ms2_spec_id_col = ms2_spec_id_col,
-                                                               AlignedFragmentsMat = AlignedFragmentsMat,
-                                                               AlignedFragments_mz_Mat = AlignedFragments_mz_Mat,
                                                                percentile_mz = percentile_mz,
                                                                percentile_Int = percentile_Int,
                                                                feature_id = feature_id,
                                                                min_spectra = min_spectra,
+                                                               sampling_samples = sampling_samples,
                                                                SamplesNames = SamplesNames)
     return [feature_id, AlignedSamplesList]

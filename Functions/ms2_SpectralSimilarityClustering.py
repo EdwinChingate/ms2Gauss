@@ -17,7 +17,9 @@ def ms2_SpectralSimilarityClustering(SummMS2_raw,
                                      ms2Folder = 'ms2_spectra',
                                      ToAdd = 'mzML',
                                      cos_tol = 0.9,
-                                     Norm2One = False):
+                                     Norm2One = False,
+                                     max_Nspectra_cluster = 250,
+                                     Nspectra_sampling = 100):
     if len(SamplesNames) == 0:
         SamplesNames = [SampleName]
     AdjacencyList, feat_ids = AdjacencyListFeatures(MS2_features = SummMS2_raw,
@@ -28,7 +30,9 @@ def ms2_SpectralSimilarityClustering(SummMS2_raw,
     RawModules = ms2_feat_modules(AdjacencyList = AdjacencyList,
                                   ms2_ids = feat_ids)
     AlignedSamplesList = []
-    for Feature_module in RawModules:
+    N_raw_modules = len(RawModules)
+    for feature_module_id in np.arange(N_raw_modules):
+        Feature_module = RawModules[feature_module_id]
         feature_id, AlignedSamplesList = ms2_FeaturesDifferences(All_FeaturesTable = SummMS2_raw,
                                                                  Feature_module = Feature_module,
                                                                  AlignedSamplesList = AlignedSamplesList,
@@ -45,6 +49,7 @@ def ms2_SpectralSimilarityClustering(SummMS2_raw,
                'min_mz',
                'max_mz',
                'IQR_mz(ppm)',
+               'SamplingSamples',
                'N_samples',
                'N_ms2-spectra',
                'min_CosSim',

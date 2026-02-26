@@ -3,7 +3,6 @@ import pandas as pd
 import os
 import datetime
 from ms2_SpectralSimilarityClustering import *
-from Write_ms2ids import *
 def ms2_SamplesAligment(ProjectName,
                         All_SummMS2Table,
                         EdgesMat,
@@ -34,4 +33,5 @@ def ms2_SamplesAligment(ProjectName,
                                                                         cos_tol = cos_tol,
                                                                         Norm2One = Norm2One)     
         TableLoc = ProjectName + '-' + str(slice_id) + '.csv'
-        AlignedSamplesDF.to_csv(TableLoc)
+    return AlignedSamplesDF
+        #AlignedSamplesDF.to_csv(TableLoc)

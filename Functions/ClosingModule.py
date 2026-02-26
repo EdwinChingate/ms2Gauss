@@ -12,6 +12,7 @@ def ClosingModule(module,
                   AlignedSamplesList,
                   SamplesNames,
                   IntramoduleCosineStatsVec,
+                  sampling_samples = 0,
                   sample_id_col = 6,
                   ms2_spec_id_col = 0,
                   percentile_mz = 5,
@@ -44,7 +45,8 @@ def ClosingModule(module,
                                            module = module,
                                            SamplesNames = SamplesNames,
                                            IntramoduleCosineStatsVec = IntramoduleCosineStatsVec,
-                                           feature_id = feature_id)   
+                                           feature_id = feature_id,
+                                           sampling_samples = sampling_samples)   
     AlignedSamplesList.append(AlignedSamplesVec)    
     feature_id += 1
     return [feature_id, AlignedSamplesList]

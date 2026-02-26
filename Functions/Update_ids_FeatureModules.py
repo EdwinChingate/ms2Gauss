@@ -1,24 +1,23 @@
-import numpy as np
 from ClosingModule import *
-def Update_ids_FeatureModules(Feature_module,
-                              Feature_Modules,
-                              AlignedFragmentsMat,
-                              All_FeaturesTable,
-                              AlignedSamplesList,
-                              AlignedFragments_mz_Mat,
+def Update_ids_FeatureModules(AlignedSamplesList,
+                              feature_cluster_data,
                               SamplesNames,
-                              IntramoduleSimilarity,
+                              sampling_samples = 0,
                               sample_id_col = 6,
                               ms2_spec_id_col = 0,
                               percentile_mz = 5,
                               percentile_Int = 10,
                               feature_id = 0,
-                              min_spectra = 3):    
+                              min_spectra = 3): 
+    if len(feature_cluster_data) == 0:
+        return [feature_id, AlignedSamplesList]
+    Modules, Feature_module, IntramoduleSimilarity, All_FeaturesTable, AlignedFragmentsMat, AlignedFragments_mz_Mat = feature_cluster_data
     module_id = 0
-    for module in Feature_Modules:    
+    for module in Modules:    
         IntramoduleCosineStatsVec = IntramoduleSimilarity[module_id, 1: 6]
         feature_id, AlignedSamplesList = ClosingModule(module = module,
                                                        min_spectra = min_spectra,
+                                                       sampling_samples = sampling_samples,
                                                        All_FeaturesTable = All_FeaturesTable,
                                                        sample_id_col = sample_id_col,
                                                        IntramoduleCosineStatsVec = IntramoduleCosineStatsVec,

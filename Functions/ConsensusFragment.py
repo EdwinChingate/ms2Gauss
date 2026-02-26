@@ -1,5 +1,3 @@
-from ttest import *
-from scipy import stats
 import numpy as np
 def ConsensusFragment(SpectraFragmentVec,
                       SpectraIntensityVec,
@@ -7,7 +5,8 @@ def ConsensusFragment(SpectraFragmentVec,
                       percentile_mz = 5,
                       percentile_Int = 10,
                       alpha = 0.01,
-                      minSpectra = 3):
+                      minSpectra = 3,
+                      reduceIQR_factor = 1):
     SpectraFragmentLoc = np.where(SpectraFragmentVec > 0)
     N_spectra = len(SpectraFragmentVec[SpectraFragmentLoc])
     if N_spectra < minSpectra:
@@ -39,7 +38,7 @@ def ConsensusFragment(SpectraFragmentVec,
                             75)    
     consensus_spectra.append([mz,
                               mz_std,
-                              p,
+                              IQR_mz / reduceIQR_factor,
                               N_spectra,
                               mz_CI,
                               mz_CIppm,
