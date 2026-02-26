@@ -1,10 +1,6 @@
 import numpy as np
 from Retrieve_and_Join_ms2_for_feature import *
-from AlignFragmentsEngine import *
-from CosineMatrix import *
-from AdjacencyList_from_matrix import *
-from CommunityBlocks import *
-from OverlappingClustering import *
+from CosClusteringEngine import *
 def CosineOverlappingClustering(Feature_module,
                                 All_FeaturesTable,
                                 SamplesNames,
@@ -32,32 +28,13 @@ def CosineOverlappingClustering(Feature_module,
     if len(All_ms2) == 0:
         return []
     Feature_module = np.array(Feature_module)[Spectra_idVec].tolist()
-    AlignedFragmentsMat, AlignedFragments_mz_Mat, Explained_fractionInt, N_features = AlignFragmentsEngine(All_ms2 = All_ms2,
-                                                                                                           Feature_module = Feature_module,
-                                                                                                           Intensity_to_explain = Intensity_to_explain,
-                                                                                                           min_spectra = min_spectra)
-    CosineMat = CosineMatrix(AlignedFragmentsMat = AlignedFragmentsMat,
-                             N_features = N_features)
-    AdjacencyList_Features, features_ids = AdjacencyList_from_matrix(CosineMat = CosineMat,
-                                                                     N_ms2_spectra = N_features,
-                                                                     cos_tol = cos_tol)
-    Feature_Modules = CommunityBlocks(AdjacencyList_Features = AdjacencyList_Features)
+    feature_cluster_data = CosClusteringEngine(All_FeaturesTable = All_FeaturesTable,
+                                               All_ms2 = All_ms2,
+                                               Feature_module = Feature_module,
+                                               slice_id = slice_id,
+                                               Intensity_to_explain = Intensity_to_explain,
+                                               min_spectra = min_spectra,
+                                               cos_tol = cos_tol,
+                                               percentile = percentile)
     
-    
-    Modules, IntramoduleSimilarity = OverlappingClustering(Feature_Modules = Feature_Modules,
-                                                           CosineMat = CosineMat.copy(),
-                                                           percentile = percentile)   
-
-    
-    This_Module_FeaturesTable = All_FeaturesTable[Feature_module, :].copy()
-    This_Module_FeaturesTable = np.hstack((This_Module_FeaturesTable,
-                                           Explained_fractionInt))
-    This_Module_FeaturesTable = np.hstack((This_Module_FeaturesTable,
-                                           slice_id * np.ones(len(Explained_fractionInt)).reshape(-1, 1)))    
-    feature_cluster_data = [Modules,
-                            Feature_module,
-                            IntramoduleSimilarity,
-                            This_Module_FeaturesTable,
-                            AlignedFragmentsMat,
-                            AlignedFragments_mz_Mat]
     return feature_cluster_data
