@@ -1,6 +1,7 @@
+from CosineSamplingOverlappingClustering import *
+
 import numpy as np
-from CosineOverlappingClustering import *
-#from CosineSamplingOverlappingClustering import *
+from ConsensusSpectra import *
 def FeatureClusterData(Feature_module,
                        All_FeaturesTable,
                        SamplesNames,
@@ -13,7 +14,7 @@ def FeatureClusterData(Feature_module,
                        slice_id = 0,
                        max_Nspectra_cluster = 170,
                        Nspectra_sampling = 54,
-                       SamplingTimes = 10,
+                       SamplingTimes = 20,
                        sample_id_col = 16,
                        ms2_spec_id_col = 15,
                        ms2Folder = 'ms2_spectra',
@@ -48,6 +49,7 @@ def FeatureClusterData(Feature_module,
                                                                Norm2One = Norm2One,
                                                                percentile_mz = percentile_mz,
                                                                percentile_Int = percentile_Int,
+                                                               SamplingTimes = SamplingTimes,
                                                                Intensity_to_explain = Intensity_to_explain)
     
     return [feature_cluster_data, 1]

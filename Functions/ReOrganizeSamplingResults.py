@@ -31,6 +31,7 @@ def ReOrganizeSamplingResults(feature_clusterList,
                                                   ignore_index = True)            
                 ModulesList.append(np.array(Feature_Module)[module].tolist()) 
                 IntramoduleSimilarityList.append(IntramoduleSimilarity[module_id, :])
-                BigFeature_Module += Feature_Module
-                feature_id += 1    
+                BigFeature_Module += np.array(Feature_Module)[module].tolist()
+                feature_id += 1  
+    BigFeature_Module = list(set(BigFeature_Module))
     return [All_consensus_ms2, ModulesList, IntramoduleSimilarityList, BigFeature_Module]

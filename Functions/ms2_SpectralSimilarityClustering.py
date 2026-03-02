@@ -1,8 +1,7 @@
-import pandas as pd
-import numpy as np
-from AdjacencyListFeatures import *
-from ms2_feat_modules import *
 from ms2_FeaturesDifferences import *
+
+import numpy as np
+from ConsensusSpectra import *
 def ms2_SpectralSimilarityClustering(SummMS2_raw,
                                      SampleName = '',
                                      SamplesNames = [],
@@ -32,7 +31,7 @@ def ms2_SpectralSimilarityClustering(SummMS2_raw,
     AlignedSamplesList = []
     N_raw_modules = len(RawModules)
     for feature_module_id in np.arange(N_raw_modules):
-        Feature_module = RawModules[feature_module_id]
+        Feature_module = RawModules[feature_module_id]        
         feature_id, AlignedSamplesList = ms2_FeaturesDifferences(All_FeaturesTable = SummMS2_raw,
                                                                  Feature_module = Feature_module,
                                                                  AlignedSamplesList = AlignedSamplesList,

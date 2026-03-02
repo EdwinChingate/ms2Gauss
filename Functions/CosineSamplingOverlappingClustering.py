@@ -1,5 +1,7 @@
-from CosineOverlappingClustering import *
 from SummarizeSampling import *
+
+import numpy as np
+from ConsensusSpectra import *
 def CosineSamplingOverlappingClustering(Feature_module,
                                         All_FeaturesTable,
                                         SamplesNames,
@@ -15,7 +17,7 @@ def CosineSamplingOverlappingClustering(Feature_module,
                                         percentile = 10,
                                         slice_id = 0,
                                         Nspectra_sampling = 54,
-                                        SamplingTimes = 10,
+                                        SamplingTimes = 20,
                                         ms2Folder = 'ms2_spectra',
                                         ToAdd = 'mzML',
                                         Norm2One = False):
@@ -24,6 +26,8 @@ def CosineSamplingOverlappingClustering(Feature_module,
         rng = np.random.default_rng()
         Sample_Feature_module = rng.choice(Feature_module,
                                            size = Nspectra_sampling)
+        print('sample')
+        print(np.min(All_FeaturesTable[Sample_Feature_module, 1]), np.max(All_FeaturesTable[Sample_Feature_module, 1]))
         feature_cluster_data = CosineOverlappingClustering(All_FeaturesTable = All_FeaturesTable,
                                                            Feature_module = Sample_Feature_module,
                                                            sample_id_col = sample_id_col,
