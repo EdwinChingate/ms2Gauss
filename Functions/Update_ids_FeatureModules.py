@@ -1,4 +1,6 @@
+from __future__ import annotations
 from ClosingModule import *
+
 def Update_ids_FeatureModules(AlignedSamplesList,
                               feature_cluster_data,
                               SamplesNames,

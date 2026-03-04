@@ -1,6 +1,7 @@
 from __future__ import annotations
 from CosineOverlappingClustering import *
 from SummarizeSampling import *
+import numpy as np
 
 def CosineSamplingOverlappingClustering(Feature_module,
                                         All_FeaturesTable,
@@ -26,8 +27,6 @@ def CosineSamplingOverlappingClustering(Feature_module,
         rng = np.random.default_rng()
         Sample_Feature_module = rng.choice(Feature_module,
                                            size = Nspectra_sampling)
-        print('sample')
-        print(np.min(All_FeaturesTable[Sample_Feature_module, 1]), np.max(All_FeaturesTable[Sample_Feature_module, 1]))
         feature_cluster_data = CosineOverlappingClustering(All_FeaturesTable = All_FeaturesTable,
                                                            Feature_module = Sample_Feature_module,
                                                            sample_id_col = sample_id_col,
@@ -44,6 +43,7 @@ def CosineSamplingOverlappingClustering(Feature_module,
         feature_clusterList.append(feature_cluster_data)
     feature_cluster_data = SummarizeSampling(feature_clusterList = feature_clusterList,
                                              All_FeaturesTable = All_FeaturesTable.copy(),
+                                             Original_Feature_module = Feature_module,
                                              SamplesNames = SamplesNames,
                                              Intensity_to_explain = Intensity_to_explain,
                                              min_spectra = min_spectra,

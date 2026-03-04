@@ -1,6 +1,6 @@
 from __future__ import annotations
 from ConsensusSpectra import *
-import pandas as pd
+import numpy as np
 
 def ReOrganizeSamplingResults(feature_clusterList,
                               min_spectra = 3,

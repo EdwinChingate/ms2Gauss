@@ -2,7 +2,7 @@ from __future__ import annotations
 from AdjacencyListFeatures import *
 from ms2_FeaturesDifferences import *
 from ms2_feat_modules import *
-import pandas as pd
+import numpy as np
 
 def ms2_SpectralSimilarityClustering(SummMS2_raw,
                                      SampleName = '',

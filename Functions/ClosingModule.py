@@ -1,8 +1,8 @@
-import numpy as np
-import pandas as pd
+from __future__ import annotations
 from ConsensusSpectra import *
-from Write_ms2ids_and_Consensus_ms2Spectra import *
 from FeatureModuleStats import *
+from Write_ms2ids_and_Consensus_ms2Spectra import *
+
 def ClosingModule(module,
                   AlignedFragments_mz_Mat,
                   AlignedFragmentsMat,
@@ -30,8 +30,7 @@ def ClosingModule(module,
                                            percentile_mz = percentile_mz,
                                            percentile_Int = percentile_Int)  
     if len(consensus_spectraDF) == 0:
-        return [feature_id, AlignedSamplesList]   
-    feature_module = npFeature_module[module].tolist()    
+        return [feature_id, AlignedSamplesList]     
     Write_ms2ids_and_Consensus_ms2Spectra(feature_id = feature_id,
                                           feature_module = module,
                                           consensus_spectraDF = consensus_spectraDF,
