@@ -1,6 +1,8 @@
-import numpy as np
-from Retrieve_and_Join_ms2_for_feature import *
+from __future__ import annotations
 from CosClusteringEngine import *
+from Retrieve_and_Join_ms2_for_feature import *
+import numpy as np
+
 def CosineOverlappingClustering(Feature_module,
                                 All_FeaturesTable,
                                 SamplesNames,

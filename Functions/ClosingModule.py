@@ -2,6 +2,7 @@ from __future__ import annotations
 from ConsensusSpectra import *
 from FeatureModuleStats import *
 from Write_ms2ids_and_Consensus_ms2Spectra import *
+import numpy as np
 
 def ClosingModule(module,
                   AlignedFragments_mz_Mat,

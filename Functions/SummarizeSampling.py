@@ -28,7 +28,9 @@ def SummarizeSampling(feature_clusterList,
                                                                                                              percentile_mz = percentile_mz,
                                                                                                              percentile_Int = percentile_Int)
 
-
+    if len(ModulesList) == 0:
+        return []      
+    
     feature_cluster_data, Explained_fractionInt = ClusteringSamplingModules(All_consensus_ms2 = All_consensus_ms2,
                                                                             ModulesList = ModulesList,
                                                                             IntramoduleSimilarityList = IntramoduleSimilarityList,

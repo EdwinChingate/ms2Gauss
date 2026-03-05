@@ -1,4 +1,5 @@
 from __future__ import annotations
+import numpy as np
 def FillAlignedFragmentsSamplesSpectraMat(AlignedFragmentsMat,
                                           AlignedFragments_mz_Mat,
                                           All_ms2,              # ← FIXED: non-default before default

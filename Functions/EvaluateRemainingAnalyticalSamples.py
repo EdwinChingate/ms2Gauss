@@ -1,8 +1,13 @@
+# --- EvaluateRemainingAnalyticalSamples.py ---
 from __future__ import annotations
-from ContrastSamplesCentroids import *
-from FeatureClusterCentroids import *
+import numpy as np
+from FeaturesTableSamples2Check import *
 from FillAlignedFragmentsSamplesSpectraMat import *
-from Retrieve_ms2_afterSampling import *
+from FeatureClusterCentroids import *
+from ContrastSamplesCentroids import *
+from MatchSampleSpectra_with_Centroid import *
+from Retrieve_and_Join_ms2_for_feature import *
+from SamplingSamplesSpectra import *
 
 def EvaluateRemainingAnalyticalSamples(Samples_FeaturesIdsList,
                                        Samples_ids2Check,
@@ -11,8 +16,8 @@ def EvaluateRemainingAnalyticalSamples(Samples_FeaturesIdsList,
                                        SamplesNames,
                                        BigFeature_Module,
                                        IntramoduleSimilarityModulesMat,
-                                       sample_id_col = 6,
-                                       ms2_spec_id_col = 0,
+                                       sample_id_col = 16,
+                                       ms2_spec_id_col = 15,
                                        ms2Folder = 'ms2_spectra',
                                        ToAdd = 'mzML',
                                        Norm2One = False,
@@ -23,17 +28,7 @@ def EvaluateRemainingAnalyticalSamples(Samples_FeaturesIdsList,
     Modules, Feature_Module, IntramoduleSimilarity, _, AlignedFragmentsMat, AlignedFragments_mz_Mat = feature_cluster_data
     N_modules = len(Modules)
 
-    # Track which spectra have already been evaluated per sample
-    # {sample_id: set of spectrum indices already evaluated}
-    EvaluatedSpectraPerSample = {sample_id: set() 
-                                 for sample_id in Samples_ids2Check}
-
-    # Track confirmation status per sample per module
-    # {sample_id: set of module_ids already confirmed (present or absent)}
-    ConfirmedModulesPerSample = {sample_id: set() 
-                                 for sample_id in Samples_ids2Check}
-
-    # Track remaining spectra pool per sample (shrinks as spectra are evaluated)
+    ConfirmedModulesPerSample = {sample_id: set() for sample_id in Samples_ids2Check}
     RemainingSpectraPerSample = {sample_id: list(Samples_FeaturesIdsList[sample_id])
                                  for sample_id in Samples_ids2Check}
 
@@ -42,68 +37,67 @@ def EvaluateRemainingAnalyticalSamples(Samples_FeaturesIdsList,
 
     while len(Samples_ids2Check) > 0:
 
-        # Sample a few spectra from each remaining sample
-        SamplesSamplesList, All_ms2 = Retrieve_ms2_afterSampling(Samples_FeaturesIdsList = RemainingSpectraPerSample,
-                                                                 Samples_ids2Check = Samples_ids2Check,
-                                                                 All_FeaturesTable = All_FeaturesTable,
-                                                                 SamplesNames = SamplesNames,
-                                                                 sample_id_col = sample_id_col,
-                                                                 ms2_spec_id_col = ms2_spec_id_col,
-                                                                 ms2Folder = ms2Folder,
-                                                                 ToAdd = ToAdd,
-                                                                 Norm2One = Norm2One,
-                                                                 Nspectra_sampling = Nspectra_sampling)
+        # 1. Generate the random sample request
+        SamplesSamplesList_requested = SamplingSamplesSpectra(
+                                         Samples_FeaturesIdsList = RemainingSpectraPerSample,
+                                         Samples_ids2Check = Samples_ids2Check,
+                                         Nspectra_sampling = Nspectra_sampling)
 
-        if len(All_ms2) == 0:
-            continue
-
-        AlignedFragmentsSamplesSpectraMat, AlignedFragmentsSamplesSpectra_mz_Mat = \
-            FillAlignedFragmentsSamplesSpectraMat(
-                AlignedFragmentsMat = AlignedFragmentsMat,
-                AlignedFragments_mz_Mat = AlignedFragments_mz_Mat,
-                All_ms2 = All_ms2,
-                SamplesSamplesList = SamplesSamplesList,
-                std_distance = std_distance,
-                ppm_tol = ppm_tol)
-
-        CosineToCentroids = ContrastSamplesCentroids(AlignedFragmentsSamplesSpectraMat = AlignedFragmentsSamplesSpectraMat,
-                                                     CentroidsAlignedFragmentsMat = CentroidsAlignedFragmentsMat,
-                                                     N_modules = N_modules)
-
-        #  Update confirmed modules and modules lists 
-        for spectrum_idx, true_spectrum_id in enumerate(SamplesSamplesList):
-
-            # Identify which sample this spectrum belongs to
+        # 2. IMMEDIATELY remove these from the pool so we don't sample them again,
+        # even if they fail to load from disk.
+        for true_spectrum_id in SamplesSamplesList_requested:
             sample_id = int(All_FeaturesTable[true_spectrum_id, sample_id_col])
-
-            # Mark this spectrum as evaluated for this sample
-            EvaluatedSpectraPerSample[sample_id].add(true_spectrum_id)
-
-            # Remove from remaining pool so it won't be sampled again
             if true_spectrum_id in RemainingSpectraPerSample[sample_id]:
                 RemainingSpectraPerSample[sample_id].remove(true_spectrum_id)
 
-            for module_id in np.arange(N_modules):
+        # 3. Try to load them from disk
+        All_ms2, Spectra_idVec = Retrieve_and_Join_ms2_for_feature(
+                                     All_FeaturesTable = All_FeaturesTable,
+                                     Feature_module = SamplesSamplesList_requested,
+                                     SamplesNames = SamplesNames,
+                                     sample_id_col = sample_id_col,
+                                     ms2_spec_id_col = ms2_spec_id_col,
+                                     ms2Folder = ms2Folder,
+                                     ToAdd = ToAdd,
+                                     Norm2One = Norm2One)
 
-                # Skip modules already confirmed for this sample
-                if module_id in ConfirmedModulesPerSample[sample_id]:
-                    continue
+        # 4. Only process centroids if we actually loaded some spectra
+        if len(All_ms2) > 0:
+            # Get the list of spectra that actually successfully loaded
+            SamplesSamplesList_successful = np.array(SamplesSamplesList_requested)[Spectra_idVec].tolist()
 
-                best_cosine = CosineToCentroids[spectrum_idx, module_id]
-                module_threshold = IntramoduleSimilarityModulesMat[module_id, 1]
+            AlignedFragmentsSamplesSpectraMat, AlignedFragmentsSamplesSpectra_mz_Mat = \
+                FillAlignedFragmentsSamplesSpectraMat(
+                    AlignedFragmentsMat = AlignedFragmentsMat,
+                    AlignedFragments_mz_Mat = AlignedFragments_mz_Mat,
+                    All_ms2 = All_ms2,
+                    SamplesSamplesList = SamplesSamplesList_successful,
+                    std_distance = std_distance,
+                    ppm_tol = ppm_tol)
 
-                if best_cosine >= module_threshold:
-                    # POSITIVE CONFIRMATION: one spectrum is enough
-                    Modules[module_id].append(true_spectrum_id)
-                    if true_spectrum_id not in BigFeature_Module:
-                        BigFeature_Module.append(true_spectrum_id)
-                    # Mark this module as confirmed for this sample
-                    ConfirmedModulesPerSample[sample_id].add(module_id)
+            CosineToCentroids = ContrastSamplesCentroids(
+                                    AlignedFragmentsSamplesSpectraMat = AlignedFragmentsSamplesSpectraMat,
+                                    CentroidsAlignedFragmentsMat = CentroidsAlignedFragmentsMat,
+                                    N_modules = N_modules)
 
-        #  Update Samples_ids2Check 
-        # Remove a sample from the list when:
-        # Option A: all modules confirmed (positive or negative) for this sample
-        # Option B: no spectra left to evaluate for this sample
+            # Match logic
+            for spectrum_idx, true_spectrum_id in enumerate(SamplesSamplesList_successful):
+                sample_id = int(All_FeaturesTable[true_spectrum_id, sample_id_col])
+                
+                for module_id in np.arange(N_modules):
+                    if module_id in ConfirmedModulesPerSample[sample_id]:
+                        continue
+
+                    best_cosine = CosineToCentroids[spectrum_idx, module_id]
+                    module_threshold = IntramoduleSimilarityModulesMat[module_id, 1]
+
+                    if best_cosine >= module_threshold:
+                        Modules[module_id].append(true_spectrum_id)
+                        if true_spectrum_id not in BigFeature_Module:
+                            BigFeature_Module.append(true_spectrum_id)
+                        ConfirmedModulesPerSample[sample_id].add(module_id)
+
+        # 5. ALWAYS execute this cleanup block, NEVER use 'continue' to skip it!
         Samples_ids_to_remove = []
         for sample_id in Samples_ids2Check:
             AllModulesResolved = len(ConfirmedModulesPerSample[sample_id]) == N_modules
@@ -112,24 +106,15 @@ def EvaluateRemainingAnalyticalSamples(Samples_FeaturesIdsList,
                 Samples_ids_to_remove.append(sample_id)
 
         for sample_id in Samples_ids_to_remove:
-            print(sample_id)
             Samples_ids2Check.remove(sample_id)
 
-        # Also update RemainingSpectraPerSample to exclude
-        # already-confirmed modules from future sampling
-        # to avoid wasting evaluations on confirmed samples
-        for sample_id in Samples_ids2Check:
-            confirmed_modules = ConfirmedModulesPerSample[sample_id]
-            if len(confirmed_modules) > 0:
-                # Only keep spectra needed for unconfirmed modules
-                # (all remaining spectra are still valid candidates)
-                pass  # RemainingSpectraPerSample already shrinks naturally
-
+    # Note: AlignedFragmentsSamplesSpectraMat might not exist if the loop exited early 
+    # due to missing files, so we pass the original matrices back safely.
     feature_cluster_data = [Modules,
                             BigFeature_Module,
                             IntramoduleSimilarityModulesMat,
                             All_FeaturesTable,
                             AlignedFragmentsMat,
-                            AlignedFragments_mz_Mat]
-
+                            AlignedFragments_mz_Mat] 
+    
     return feature_cluster_data

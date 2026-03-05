@@ -1,18 +1,25 @@
 from __future__ import annotations
 from ConsensusSpectra import *
 import numpy as np
+import pandas as pd
 
 def ReOrganizeSamplingResults(feature_clusterList,
                               min_spectra = 3,
                               percentile_mz = 5,
                               percentile_Int = 10):
+    
     ModulesList = []
     FirstSpectra = True
     IntramoduleSimilarityList = []
     feature_id = 0
     BigFeature_Module = []
+    
     for feature_cluster_data in feature_clusterList:
+        
+        if len(feature_cluster_data) == 0:           
+            continue
         Modules, Feature_Module, IntramoduleSimilarity, This_Module_FeaturesTable, AlignedFragmentsMat, AlignedFragments_mz_Mat = feature_cluster_data        
+   
         for module_id in np.arange(len(Modules)):   
             module = Modules[module_id]            
             consensus_spectraDF = ConsensusSpectra(module = module,
@@ -35,5 +42,9 @@ def ReOrganizeSamplingResults(feature_clusterList,
                 IntramoduleSimilarityList.append(IntramoduleSimilarity[module_id, :])
                 BigFeature_Module += np.array(Feature_Module)[module].tolist()
                 feature_id += 1  
+
+    if FirstSpectra:
+        return [pd.DataFrame(), [], [], []]
     BigFeature_Module = list(set(BigFeature_Module))
+    
     return [All_consensus_ms2, ModulesList, IntramoduleSimilarityList, BigFeature_Module]

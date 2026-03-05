@@ -11,8 +11,10 @@ def Update_ids_FeatureModules(AlignedSamplesList,
                               percentile_Int = 10,
                               feature_id = 0,
                               min_spectra = 3): 
+    
     if len(feature_cluster_data) == 0:
         return [feature_id, AlignedSamplesList]
+    
     Modules, Feature_module, IntramoduleSimilarity, All_FeaturesTable, AlignedFragmentsMat, AlignedFragments_mz_Mat = feature_cluster_data
     module_id = 0
     for module in Modules:    
@@ -33,4 +35,5 @@ def Update_ids_FeatureModules(AlignedSamplesList,
                                                        feature_id = feature_id,
                                                        SamplesNames = SamplesNames)  
         module_id += 1
+        
     return [feature_id, AlignedSamplesList]
